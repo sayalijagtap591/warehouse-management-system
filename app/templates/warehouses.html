@@ -1,0 +1,1945 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Shipments - WarehousePro</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f7fb;
+        color: #1f2937;
+      }
+
+      /* ================= SIDEBAR ================= */
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 220px;
+        height: 100vh;
+
+        background: #111827;
+        color: white;
+
+        padding: 20px 12px;
+
+        overflow-y: auto;
+
+        z-index: 1000;
+      }
+
+      .logo {
+        font-size: 21px;
+        font-weight: bold;
+
+        text-align: center;
+
+        padding: 10px;
+
+        margin-bottom: 20px;
+      }
+
+      .sidebar a {
+        display: block;
+
+        color: #d1d5db;
+
+        text-decoration: none;
+
+        padding: 12px 14px;
+
+        margin-bottom: 6px;
+
+        border-radius: 7px;
+
+        font-size: 14px;
+
+        transition: 0.2s;
+      }
+
+      .sidebar a:hover {
+        background: #1f2937;
+        color: white;
+      }
+
+      .sidebar a.active {
+        background: #2563eb;
+        color: white;
+      }
+
+      /* ================= MAIN ================= */
+
+      .main-content {
+        margin-left: 220px;
+
+        width: calc(100% - 220px);
+
+        min-height: 100vh;
+
+        padding: 30px;
+      }
+
+      .page-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+
+        font-size: 28px;
+      }
+
+      .date {
+        color: #6b7280;
+
+        font-size: 14px;
+
+        margin-top: 6px;
+      }
+
+      /* ================= MESSAGE ================= */
+
+      .message {
+        display: none;
+
+        padding: 12px 15px;
+
+        border-radius: 7px;
+
+        margin-bottom: 20px;
+
+        font-size: 14px;
+      }
+
+      .message.success {
+        display: block;
+
+        background: #dcfce7;
+
+        color: #166534;
+      }
+
+      .message.error {
+        display: block;
+
+        background: #fee2e2;
+
+        color: #991b1b;
+      }
+
+      /* ================= CARDS ================= */
+
+      .summary-cards {
+        display: grid;
+
+        grid-template-columns: repeat(4, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 25px;
+      }
+
+      .summary-card {
+        background: white;
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+
+      .summary-card h3 {
+        margin: 0 0 10px;
+
+        font-size: 15px;
+
+        color: #6b7280;
+      }
+
+      .summary-number {
+        font-size: 30px;
+
+        font-weight: bold;
+
+        color: #111827;
+      }
+
+      .summary-card p {
+        margin: 8px 0 0;
+
+        color: #6b7280;
+
+        font-size: 13px;
+      }
+
+      /* ================= TOOLBAR ================= */
+
+      .toolbar {
+        background: white;
+
+        padding: 15px;
+
+        border-radius: 10px;
+
+        margin-bottom: 25px;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 12px;
+
+        flex-wrap: wrap;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .search-box {
+        flex: 1;
+
+        min-width: 250px;
+      }
+
+      .search-box input {
+        width: 100%;
+
+        padding: 11px 13px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 7px;
+
+        outline: none;
+
+        font-size: 14px;
+      }
+
+      .search-box input:focus {
+        border-color: #2563eb;
+      }
+
+      /* ================= BUTTONS ================= */
+
+      button {
+        border: none;
+
+        padding: 10px 15px;
+
+        border-radius: 7px;
+
+        cursor: pointer;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        color: white;
+
+        background: #2563eb;
+
+        transition: 0.2s;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .btn-add {
+        background: #2563eb;
+      }
+
+      .btn-refresh {
+        background: #374151;
+      }
+
+      .btn-save {
+        background: #16a34a;
+      }
+
+      .btn-cancel {
+        background: #6b7280;
+      }
+
+      .btn-edit {
+        background: #16a34a;
+
+        padding: 7px 11px;
+
+        font-size: 12px;
+      }
+
+      .btn-delete {
+        background: #dc2626;
+
+        padding: 7px 11px;
+
+        font-size: 12px;
+      }
+
+      /* ================= FORM ================= */
+
+      .form-card {
+        display: none;
+
+        background: white;
+
+        padding: 22px;
+
+        border-radius: 10px;
+
+        margin-bottom: 25px;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+
+      .form-card h2 {
+        margin-top: 0;
+
+        margin-bottom: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-size: 13px;
+
+        font-weight: bold;
+
+        margin-bottom: 7px;
+
+        color: #374151;
+      }
+
+      .form-group input,
+      .form-group select {
+        padding: 11px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 7px;
+
+        outline: none;
+
+        font-size: 14px;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #2563eb;
+      }
+
+      .form-actions {
+        margin-top: 20px;
+
+        display: flex;
+
+        gap: 10px;
+      }
+
+      /* ================= TABLE CARD ================= */
+
+      .table-card {
+        background: white;
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+
+      .table-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 18px;
+      }
+
+      .table-header h2 {
+        margin: 0;
+
+        font-size: 20px;
+      }
+
+      .record-count {
+        color: #6b7280;
+
+        font-size: 13px;
+      }
+
+      .table-wrapper {
+        width: 100%;
+
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 850px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+
+        border-bottom: 1px solid #e5e7eb;
+
+        text-align: left;
+
+        font-size: 14px;
+      }
+
+      th {
+        background: #f1f5f9;
+
+        color: #374151;
+
+        font-weight: 600;
+      }
+
+      tr:hover td {
+        background: #f9fafb;
+      }
+
+      .action-buttons {
+        display: flex;
+
+        gap: 6px;
+      }
+
+      /* ================= STATUS ================= */
+
+      .status {
+        display: inline-block;
+
+        padding: 5px 10px;
+
+        border-radius: 20px;
+
+        font-size: 12px;
+
+        font-weight: bold;
+      }
+
+      .status-delivered,
+      .status-shipped,
+      .status-completed {
+        background: #dcfce7;
+
+        color: #166534;
+      }
+
+      .status-pending,
+      .status-processing {
+        background: #fef3c7;
+
+        color: #92400e;
+      }
+
+      .status-cancelled {
+        background: #fee2e2;
+
+        color: #991b1b;
+      }
+
+      .status-default {
+        background: #e5e7eb;
+
+        color: #374151;
+      }
+
+      /* ================= LOADING ================= */
+
+      .loading,
+      .empty {
+        text-align: center;
+
+        padding: 30px;
+
+        color: #6b7280;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1000px) {
+        .summary-cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .form-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          position: relative;
+
+          width: 100%;
+
+          height: auto;
+        }
+
+        .main-content {
+          margin-left: 0;
+
+          width: 100%;
+
+          padding: 15px;
+        }
+
+        .summary-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .page-header {
+          flex-direction: column;
+
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+      <div class="logo">🏭 WarehousePro</div>
+
+      <a href="/"> 🏠 Dashboard </a>
+
+      <a href="/products"> 📦 Products </a>
+
+      <a href="/inventory"> 📊 Inventory </a>
+
+      <a href="/warehouses-page"> 🏭 Warehouses </a>
+
+      <a href="/locations-page"> 📍 Locations </a>
+
+      <a href="/orders-page"> 🛒 Orders </a>
+
+      <a href="/shipments-page" class="active"> 🚚 Shipments </a>
+
+      <a href="/receivings-page"> 📥 Receivings </a>
+
+      <a href="/reports-page"> 📊 Reports </a>
+
+      <a href="/login"> 🚪 Logout </a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+      <!-- PAGE HEADER -->
+
+      <div class="page-header">
+        <div>
+          <h1>🚚 Shipments Management</h1>
+
+          <div class="date">
+            Today:
+            <span id="currentDate"> - </span>
+          </div>
+        </div>
+
+        <button class="btn-add" onclick="showShipmentForm()">
+          + Add Shipment
+        </button>
+      </div>
+
+      <!-- MESSAGE -->
+
+      <div id="shipmentMessage" class="message"></div>
+
+      <!-- ================= SUMMARY ================= -->
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <h3>🚚 Total Shipments</h3>
+
+          <div class="summary-number" id="totalShipments">0</div>
+
+          <p>All shipment records</p>
+        </div>
+
+        <div class="summary-card">
+          <h3>📦 Shipped</h3>
+
+          <div class="summary-number" id="shippedCount">0</div>
+
+          <p>Shipped shipments</p>
+        </div>
+
+        <div class="summary-card">
+          <h3>⏳ Pending</h3>
+
+          <div class="summary-number" id="pendingCount">0</div>
+
+          <p>Pending shipments</p>
+        </div>
+
+        <div class="summary-card">
+          <h3>📬 Delivered</h3>
+
+          <div class="summary-number" id="deliveredCount">0</div>
+
+          <p>Delivered shipments</p>
+        </div>
+      </div>
+
+      <!-- ================= FORM ================= -->
+
+      <div class="form-card" id="shipmentForm">
+        <h2 id="formTitle">Add New Shipment</h2>
+
+        <input type="hidden" id="editShipmentId" />
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label> Shipment Number * </label>
+
+            <input
+              type="text"
+              id="shipmentNumber"
+              placeholder="Enter shipment number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Order ID * </label>
+
+            <input
+              type="number"
+              id="shipmentOrderId"
+              placeholder="Enter order ID"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Status </label>
+
+            <select id="shipmentStatus">
+              <option value="Pending">Pending</option>
+
+              <option value="Processing">Processing</option>
+
+              <option value="Shipped">Shipped</option>
+
+              <option value="Delivered">Delivered</option>
+
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            class="btn-save"
+            id="saveShipmentButton"
+            onclick="saveShipment()"
+          >
+            Save Shipment
+          </button>
+
+          <button class="btn-cancel" onclick="hideShipmentForm()">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TOOLBAR ================= -->
+
+      <div class="toolbar">
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchShipment"
+            placeholder="🔍 Search by shipment number, order ID, status..."
+            oninput="filterShipments()"
+          />
+        </div>
+
+        <button class="btn-refresh" onclick="loadShipments()">
+          🔄 Refresh
+        </button>
+
+        <button onclick="clearSearch()">Clear</button>
+      </div>
+
+      <!-- ================= TABLE ================= -->
+
+      <div class="table-card">
+        <div class="table-header">
+          <h2>Shipment List</h2>
+
+          <span class="record-count" id="shipmentRecordCount"> 0 records </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+
+                <th>Shipment Number</th>
+
+                <th>Order ID</th>
+
+                <th>Status</th>
+
+                <th>Created At</th>
+
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="shipmentTableBody">
+              <tr>
+                <td colspan="6" class="loading">Loading shipments...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+<script>
+
+    /* ==========================================
+       GLOBAL DATA
+    ========================================== */
+
+    let shipmentsData = [];
+
+
+    /* ==========================================
+       CURRENT DATE
+    ========================================== */
+
+    function loadCurrentDate() {
+
+        const element =
+            document.getElementById(
+                "currentDate"
+            );
+
+        if (!element) return;
+
+
+        const today = new Date();
+
+
+        element.textContent =
+            today.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+    }
+
+
+    /* ==========================================
+       LOAD SHIPMENTS
+    ========================================== */
+
+    async function loadShipments() {
+
+        const tableBody =
+            document.getElementById(
+                "shipmentTableBody"
+            );
+
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="loading">
+
+                    Loading shipments...
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        try {
+
+            const response =
+                await fetch("/shipments");
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load shipments"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Shipments:",
+                data
+            );
+
+
+            shipmentsData =
+                Array.isArray(data)
+                    ? data
+                    : (
+                        Array.isArray(
+                            data.shipments
+                        )
+                            ? data.shipments
+                            : []
+                    );
+
+
+            updateSummary();
+
+
+            displayShipments(
+                shipmentsData
+            );
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Shipment Error:",
+                error
+            );
+
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty">
+
+                        ❌ Failed to load shipments.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            showMessage(
+                "Failed to load shipments. Please check the server.",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       DISPLAY SHIPMENTS
+    ========================================== */
+
+    function displayShipments(
+        shipments
+    ) {
+
+        const tableBody =
+            document.getElementById(
+                "shipmentTableBody"
+            );
+
+
+        tableBody.innerHTML = "";
+
+
+        if (
+            !shipments ||
+            shipments.length === 0
+        ) {
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty">
+
+                        No shipments found.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            return;
+
+        }
+
+
+        shipments.forEach(
+            function(shipment) {
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${shipment.id ?? "-"}
+                    </td>
+
+
+                    <td>
+                        ${shipment.shipment_number ?? "-"}
+                    </td>
+
+
+                    <td>
+                        ${shipment.order_id ?? "-"}
+                    </td>
+
+
+                    <td>
+
+                        ${createStatusBadge(
+                            shipment.status
+                        )}
+
+                    </td>
+
+
+                    <td>
+                        ${formatDate(
+                            shipment.created_at
+                        )}
+                    </td>
+
+
+                    <td>
+
+                        <div
+                            class="action-buttons">
+
+
+                            <button
+                                class="btn-edit"
+                                onclick="editShipment(${shipment.id})">
+
+                                ✏ Edit
+
+                            </button>
+
+
+                            <button
+                                class="btn-delete"
+                                onclick="deleteShipment(${shipment.id})">
+
+                                🗑 Delete
+
+                            </button>
+
+
+                        </div>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "shipmentRecordCount"
+        ).textContent =
+            `${shipments.length} records`;
+
+    }
+
+
+    /* ==========================================
+       SUMMARY
+    ========================================== */
+
+    function updateSummary() {
+
+        const total =
+            shipmentsData.length;
+
+
+        let shipped = 0;
+
+        let pending = 0;
+
+        let delivered = 0;
+
+
+        shipmentsData.forEach(
+            function(shipment) {
+
+                const status =
+                    String(
+                        shipment.status ?? ""
+                    )
+                    .toLowerCase()
+                    .trim();
+
+
+                if (
+                    status === "shipped"
+                ) {
+
+                    shipped++;
+
+                }
+
+
+                if (
+                    status === "pending"
+                ) {
+
+                    pending++;
+
+                }
+
+
+                if (
+                    status === "delivered"
+                ) {
+
+                    delivered++;
+
+                }
+
+            }
+        );
+
+
+        document.getElementById(
+            "totalShipments"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "shippedCount"
+        ).textContent = shipped;
+
+
+        document.getElementById(
+            "pendingCount"
+        ).textContent = pending;
+
+
+        document.getElementById(
+            "deliveredCount"
+        ).textContent = delivered;
+
+    }
+
+
+    /* ==========================================
+       SHOW FORM
+    ========================================== */
+
+    function showShipmentForm() {
+
+        document.getElementById(
+            "shipmentForm"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Add New Shipment";
+
+
+        document.getElementById(
+            "saveShipmentButton"
+        ).textContent =
+            "Save Shipment";
+
+
+        document.getElementById(
+            "editShipmentId"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentNumber"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentOrderId"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentStatus"
+        ).value = "Pending";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* ==========================================
+       HIDE FORM
+    ========================================== */
+
+    function hideShipmentForm() {
+
+        document.getElementById(
+            "shipmentForm"
+        ).style.display = "none";
+
+
+        clearShipmentForm();
+
+    }
+
+
+    /* ==========================================
+       CLEAR FORM
+    ========================================== */
+
+    function clearShipmentForm() {
+
+        document.getElementById(
+            "editShipmentId"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentNumber"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentOrderId"
+        ).value = "";
+
+
+        document.getElementById(
+            "shipmentStatus"
+        ).value = "Pending";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Add New Shipment";
+
+
+        document.getElementById(
+            "saveShipmentButton"
+        ).textContent =
+            "Save Shipment";
+
+    }
+    /* ==========================================
+       SAVE SHIPMENT
+    ========================================== */
+
+    async function saveShipment() {
+
+        const editId =
+            document.getElementById(
+                "editShipmentId"
+            ).value;
+
+
+        const shipmentNumber =
+            document.getElementById(
+                "shipmentNumber"
+            ).value.trim();
+
+
+        const orderId =
+            Number(
+                document.getElementById(
+                    "shipmentOrderId"
+                ).value
+            );
+
+
+        const status =
+            document.getElementById(
+                "shipmentStatus"
+            ).value;
+
+
+        /* ================= VALIDATION ================= */
+
+        if (!shipmentNumber) {
+
+            showMessage(
+                "Please enter Shipment Number.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!orderId || orderId <= 0) {
+
+            showMessage(
+                "Please enter a valid Order ID.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            let response;
+
+
+            /* ================= UPDATE ================= */
+
+            if (editId) {
+
+                response =
+                    await fetch(
+                        `/shipments/${editId}`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    shipment_number:
+                                        shipmentNumber,
+
+                                    order_id:
+                                        orderId,
+
+                                    status:
+                                        status
+                                })
+                        }
+                    );
+
+            }
+
+
+            /* ================= ADD ================= */
+
+            else {
+
+                response =
+                    await fetch(
+                        "/shipments",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    shipment_number:
+                                        shipmentNumber,
+
+                                    order_id:
+                                        orderId,
+
+                                    status:
+                                        status
+                                })
+                        }
+                    );
+
+            }
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            }
+
+            catch (error) {
+
+                data = {};
+
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Failed to save shipment.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+
+                editId
+                    ? "Shipment updated successfully!"
+                    : "Shipment added successfully!",
+
+                "success"
+
+            );
+
+
+            hideShipmentForm();
+
+
+            await loadShipments();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Save Shipment Error:",
+                error
+            );
+
+
+            showMessage(
+                "Something went wrong while saving shipment.",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       EDIT SHIPMENT
+    ========================================== */
+
+    function editShipment(id) {
+
+        const shipment =
+            shipmentsData.find(
+                function(item) {
+
+                    return Number(item.id)
+                        === Number(id);
+
+                }
+            );
+
+
+        if (!shipment) {
+
+            showMessage(
+                "Shipment not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "shipmentForm"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Edit Shipment";
+
+
+        document.getElementById(
+            "saveShipmentButton"
+        ).textContent =
+            "Update Shipment";
+
+
+        document.getElementById(
+            "editShipmentId"
+        ).value =
+            shipment.id;
+
+
+        document.getElementById(
+            "shipmentNumber"
+        ).value =
+            shipment.shipment_number ?? "";
+
+
+        document.getElementById(
+            "shipmentOrderId"
+        ).value =
+            shipment.order_id ?? "";
+
+
+        document.getElementById(
+            "shipmentStatus"
+        ).value =
+            shipment.status ?? "Pending";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* ==========================================
+       DELETE SHIPMENT
+    ========================================== */
+
+    async function deleteShipment(id) {
+
+        const shipment =
+            shipmentsData.find(
+                function(item) {
+
+                    return Number(item.id)
+                        === Number(id);
+
+                }
+            );
+
+
+        const shipmentName =
+            shipment
+                ? shipment.shipment_number
+                : id;
+
+
+        const confirmed =
+            confirm(
+                `Are you sure you want to delete shipment "${shipmentName}"?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/shipments/${id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            }
+
+            catch (error) {
+
+                data = {};
+
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Failed to delete shipment.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+                "Shipment deleted successfully!",
+                "success"
+            );
+
+
+            await loadShipments();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Delete Shipment Error:",
+                error
+            );
+
+
+            showMessage(
+                "Something went wrong while deleting shipment.",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       SEARCH / FILTER
+    ========================================== */
+
+    function filterShipments() {
+
+        const search =
+            document.getElementById(
+                "searchShipment"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+        if (!search) {
+
+            displayShipments(
+                shipmentsData
+            );
+
+            return;
+
+        }
+
+
+        const filtered =
+            shipmentsData.filter(
+                function(shipment) {
+
+                    const id =
+                        String(
+                            shipment.id ?? ""
+                        )
+                        .toLowerCase();
+
+
+                    const shipmentNumber =
+                        String(
+                            shipment.shipment_number ?? ""
+                        )
+                        .toLowerCase();
+
+
+                    const orderId =
+                        String(
+                            shipment.order_id ?? ""
+                        )
+                        .toLowerCase();
+
+
+                    const status =
+                        String(
+                            shipment.status ?? ""
+                        )
+                        .toLowerCase();
+
+
+                    const createdAt =
+                        String(
+                            shipment.created_at ?? ""
+                        )
+                        .toLowerCase();
+
+
+                    return (
+
+                        id.includes(search)
+
+                        ||
+
+                        shipmentNumber
+                            .includes(search)
+
+                        ||
+
+                        orderId
+                            .includes(search)
+
+                        ||
+
+                        status
+                            .includes(search)
+
+                        ||
+
+                        createdAt
+                            .includes(search)
+
+                    );
+
+                }
+            );
+
+
+        displayShipments(
+            filtered
+        );
+
+    }
+
+
+    /* ==========================================
+       CLEAR SEARCH
+    ========================================== */
+
+    function clearSearch() {
+
+        document.getElementById(
+            "searchShipment"
+        ).value = "";
+
+
+        displayShipments(
+            shipmentsData
+        );
+
+    }
+
+
+    /* ==========================================
+       STATUS BADGE
+    ========================================== */
+
+    function createStatusBadge(
+        status
+    ) {
+
+        const cleanStatus =
+            String(
+                status ?? "-"
+            )
+            .toLowerCase()
+            .trim();
+
+
+        let className =
+            "status-default";
+
+
+        if (
+            cleanStatus === "delivered"
+        ) {
+
+            className =
+                "status-delivered";
+
+        }
+
+        else if (
+            cleanStatus === "shipped"
+        ) {
+
+            className =
+                "status-shipped";
+
+        }
+
+        else if (
+            cleanStatus === "completed"
+        ) {
+
+            className =
+                "status-completed";
+
+        }
+
+        else if (
+            cleanStatus === "pending"
+        ) {
+
+            className =
+                "status-pending";
+
+        }
+
+        else if (
+            cleanStatus === "processing"
+        ) {
+
+            className =
+                "status-processing";
+
+        }
+
+        else if (
+            cleanStatus === "cancelled" ||
+            cleanStatus === "canceled"
+        ) {
+
+            className =
+                "status-cancelled";
+
+        }
+
+
+        return `
+
+            <span
+                class="status ${className}">
+
+                ${status ?? "-"}
+
+            </span>
+
+        `;
+
+    }
+
+
+    /* ==========================================
+       FORMAT DATE
+    ========================================== */
+
+    function formatDate(
+        dateValue
+    ) {
+
+        if (!dateValue) {
+            return "-";
+        }
+
+
+        const date =
+            new Date(dateValue);
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return dateValue;
+
+        }
+
+
+        return date.toLocaleString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       SHOW MESSAGE
+    ========================================== */
+
+    function showMessage(
+        message,
+        type
+    ) {
+
+        const element =
+            document.getElementById(
+                "shipmentMessage"
+            );
+
+
+        element.textContent =
+            message;
+
+
+        element.className =
+            "message " + type;
+
+
+        setTimeout(
+            function() {
+
+                element.className =
+                    "message";
+
+            },
+            4000
+        );
+
+    }
+
+
+    /* ==========================================
+       ENTER KEY SUPPORT
+    ========================================== */
+
+    document
+        .getElementById(
+            "shipmentNumber"
+        )
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    saveShipment();
+
+                }
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "shipmentOrderId"
+        )
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    saveShipment();
+
+                }
+
+            }
+        );
+
+
+    /* ==========================================
+       PAGE INITIALIZATION
+    ========================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadCurrentDate();
+
+            loadShipments();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

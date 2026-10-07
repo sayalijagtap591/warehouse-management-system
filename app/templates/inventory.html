@@ -1,0 +1,1544 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Inventory - Warehouse Management System</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        color: #1f2937;
+        font-size: 14px;
+      }
+
+      /* ================= SIDEBAR ================= */
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        background: #111827;
+        color: white;
+        padding: 20px 15px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar h2 {
+        margin: 5px 5px 5px;
+        font-size: 20px;
+      }
+
+      .sidebar .subtitle {
+        color: #9ca3af;
+        font-size: 12px;
+        margin: 0 5px 25px;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #e5e7eb;
+        text-decoration: none;
+        padding: 11px 12px;
+        margin: 5px 0;
+        border-radius: 7px;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .sidebar a:hover {
+        background: #2563eb;
+        color: white;
+      }
+
+      .sidebar a.active {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+      }
+
+      .logout {
+        margin-top: 20px !important;
+        border-top: 1px solid #374151;
+        padding-top: 15px !important;
+      }
+
+      /* ================= MAIN CONTENT ================= */
+
+      .main-content {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+        min-height: 100vh;
+        padding: 30px;
+        background: #f4f6f8;
+      }
+
+      /* ================= TOP BAR ================= */
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .topbar h1 {
+        margin: 0;
+        font-size: 26px;
+        color: #111827;
+      }
+
+      .date {
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      /* ================= PAGE HEADER ================= */
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .page-header h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .page-header p {
+        margin: 5px 0 0;
+        color: #6b7280;
+      }
+
+      /* ================= SUMMARY ================= */
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+
+      .summary-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-left: 5px solid #2563eb;
+      }
+
+      .summary-card.products {
+        border-left-color: #16a34a;
+      }
+
+      .summary-card.quantity {
+        border-left-color: #f59e0b;
+      }
+
+      .summary-card.value {
+        border-left-color: #7c3aed;
+      }
+
+      .summary-title {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .summary-value {
+        font-size: 25px;
+        font-weight: bold;
+        color: #111827;
+      }
+
+      /* ================= TOOLBAR ================= */
+
+      .toolbar {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 220px;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        outline: none;
+      }
+
+      .search-box:focus {
+        border-color: #2563eb;
+      }
+
+      .filter-select {
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: white;
+      }
+
+      /* ================= BUTTONS ================= */
+
+      button {
+        border: none;
+        padding: 9px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: 0.2s;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .btn-primary {
+        background: #2563eb;
+        color: white;
+      }
+
+      .btn-success {
+        background: #16a34a;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #dc2626;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #6b7280;
+        color: white;
+      }
+
+      /* ================= CARD ================= */
+
+      .card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      /* ================= TABLE ================= */
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+      }
+
+      th {
+        background: #111827;
+        color: white;
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background: #f9fafb;
+      }
+
+      /* ================= STOCK STATUS ================= */
+
+      .stock-badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .stock-good {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .stock-low {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .stock-out {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* ================= MOVEMENT ================= */
+
+      .movement-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .form-group label {
+        font-size: 12px;
+        font-weight: bold;
+        color: #374151;
+      }
+
+      .form-group input,
+      .form-group select {
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        outline: none;
+        width: 100%;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #2563eb;
+      }
+
+      .movement-button {
+        display: flex;
+        align-items: end;
+      }
+
+      .movement-button button {
+        width: 100%;
+      }
+
+      /* ================= MESSAGE ================= */
+
+      .message {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        display: none;
+      }
+
+      .message.success {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .message.error {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 25px;
+        color: #6b7280;
+      }
+
+      .movement-in {
+        color: #16a34a;
+        font-weight: bold;
+      }
+
+      .movement-out {
+        color: #dc2626;
+        font-weight: bold;
+      }
+
+      .back {
+        display: inline-block;
+        margin-bottom: 15px;
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .back:hover {
+        text-decoration: underline;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1000px) {
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .movement-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          width: 180px;
+        }
+
+        .main-content {
+          margin-left: 180px;
+          width: calc(100% - 180px);
+          padding: 15px;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .movement-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+      <h2>📦 WarehousePro</h2>
+
+      <div class="subtitle">Management System</div>
+
+      <a href="/"> 🏠 Dashboard </a>
+
+      <a href="/products"> 📦 Products </a>
+
+      <a href="/inventory" class="active"> 📊 Inventory </a>
+
+      <a href="/warehouses-page"> 🏭 Warehouses </a>
+
+      <a href="/locations-page"> 📍 Locations </a>
+
+      <a href="/orders-page"> 🛒 Orders </a>
+
+      <a href="/shipments-page"> 🚚 Shipments </a>
+
+      <a href="/receivings-page"> 📥 Receivings </a>
+
+      <a href="/reports-page"> 📈 Reports </a>
+
+      <a href="/login" class="logout"> 🚪 Logout </a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <h1>Inventory Management</h1>
+        </div>
+
+        <div class="date" id="currentDate">Loading date...</div>
+      </div>
+
+      <a class="back" href="/"> ← Back to Dashboard </a>
+
+      <div class="page-header">
+        <div>
+          <h2>Inventory / Stock</h2>
+
+          <p>Monitor product stock, quantities and inventory value.</p>
+        </div>
+      </div>
+
+      <!-- SUMMARY CARDS -->
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title">Total Products</div>
+
+          <div class="summary-value" id="totalProducts">0</div>
+        </div>
+
+        <div class="summary-card products">
+          <div class="summary-title">Products In Stock</div>
+
+          <div class="summary-value" id="productsInStock">0</div>
+        </div>
+
+        <div class="summary-card quantity">
+          <div class="summary-title">Total Quantity</div>
+
+          <div class="summary-value" id="totalQuantity">0</div>
+        </div>
+
+        <div class="summary-card value">
+          <div class="summary-title">Total Stock Value</div>
+
+          <div class="summary-value" id="totalStockValue">₹0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+
+      <div class="toolbar">
+        <input
+          type="text"
+          id="searchInventory"
+          class="search-box"
+          placeholder="Search product by name or ID..."
+          onkeyup="filterInventory()"
+        />
+
+        <select
+          id="stockFilter"
+          class="filter-select"
+          onchange="filterInventory()"
+        >
+          <option value="ALL">All Stock</option>
+
+          <option value="GOOD">In Stock</option>
+
+          <option value="LOW">Low Stock</option>
+
+          <option value="OUT">Out of Stock</option>
+        </select>
+
+        <button class="btn-primary" onclick="loadInventory()">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- INVENTORY TABLE -->
+
+      <div class="card">
+        <div class="card-header">
+          <h2>📊 Current Inventory</h2>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Stock Value</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="stockTableBody">
+              <tr>
+                <td colspan="6" class="loading">Loading inventory...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STOCK MOVEMENT -->
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>🔄 Stock Movement</h2>
+
+            <p>Add incoming stock or remove outgoing stock.</p>
+          </div>
+        </div>
+
+        <div class="movement-grid">
+          <div class="form-group">
+            <label> Product ID </label>
+
+            <input
+              type="number"
+              id="movementProductId"
+              placeholder="Enter Product ID"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Movement Type </label>
+
+            <select id="movementType">
+              <option value="IN">IN - Receive Stock</option>
+
+              <option value="OUT">OUT - Dispatch Stock</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label> Quantity </label>
+
+            <input
+              type="number"
+              id="movementQuantity"
+              placeholder="Enter Quantity"
+              min="1"
+            />
+          </div>
+
+          <div class="movement-button">
+            <button class="btn-success" onclick="addStockMovement()">
+              Update Stock
+            </button>
+          </div>
+        </div>
+
+        <div id="movementMessage" class="message"></div>
+      </div>
+
+      <!-- MOVEMENT HISTORY -->
+
+      <div class="card">
+        <div class="card-header">
+          <h2>📜 Recent Stock Movements</h2>
+
+          <button class="btn-secondary" onclick="loadMovementHistory()">
+            🔄 Refresh
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Product ID</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Date / Time</th>
+              </tr>
+            </thead>
+
+            <tbody id="movementTableBody">
+              <tr>
+                <td colspan="5" class="loading">Loading movement history...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+
+        let inventoryData = [];
+
+
+        /* ================= CURRENT DATE ================= */
+
+        function loadCurrentDate() {
+
+            const dateElement =
+                document.getElementById("currentDate");
+
+            if (!dateElement) {
+                return;
+            }
+
+            const today = new Date();
+
+            dateElement.textContent =
+                today.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
+        }
+
+
+        /* ================= LOAD INVENTORY ================= */
+
+        async function loadInventory() {
+
+            const tableBody =
+                document.getElementById(
+                    "stockTableBody"
+                );
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        Loading inventory...
+                    </td>
+                </tr>
+            `;
+
+            try {
+
+                const response =
+                    await fetch("/stock");
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Failed to load inventory"
+                    );
+                }
+
+                const stock =
+                    await response.json();
+
+                inventoryData =
+                    Array.isArray(stock)
+                        ? stock
+                        : [];
+
+                updateInventorySummary();
+
+                displayInventory(
+                    inventoryData
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Inventory Error:",
+                    error
+                );
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            ❌ Failed to load inventory
+                        </td>
+                    </tr>
+                `;
+
+            }
+        }
+
+
+        /* ================= DISPLAY INVENTORY ================= */
+
+        function displayInventory(stock) {
+
+            const tableBody =
+                document.getElementById(
+                    "stockTableBody"
+                );
+
+            tableBody.innerHTML = "";
+
+            if (
+                !stock ||
+                stock.length === 0
+            ) {
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            No inventory found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            stock.forEach(function(item) {
+
+                const row =
+                    document.createElement("tr");
+
+                const quantity =
+                    Number(
+                        item.quantity || 0
+                    );
+
+                const price =
+                    Number(
+                        item.price || 0
+                    );
+
+                const stockValue =
+                    Number(
+                        item.stock_value ??
+                        quantity * price
+                    );
+
+
+                let status = "";
+                let statusClass = "";
+
+
+                if (quantity <= 0) {
+
+                    status = "Out of Stock";
+                    statusClass = "stock-out";
+
+                }
+
+                else if (quantity <= 10) {
+
+                    status = "Low Stock";
+                    statusClass = "stock-low";
+
+                }
+
+                else {
+
+                    status = "In Stock";
+                    statusClass = "stock-good";
+
+                }
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${item.product_id ?? "-"}
+                    </td>
+
+                    <td>
+                        ${item.product_name ?? "-"}
+                    </td>
+
+                    <td>
+                        ${quantity}
+                    </td>
+
+                    <td>
+                        ₹${price.toFixed(2)}
+                    </td>
+
+                    <td>
+                        ₹${stockValue.toFixed(2)}
+                    </td>
+
+                    <td>
+                        <span
+                            class="stock-badge ${statusClass}"
+                        >
+                            ${status}
+                        </span>
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(row);
+
+            });
+
+        }
+
+
+        /* ================= SUMMARY ================= */
+
+        function updateInventorySummary() {
+
+            const totalProducts =
+                inventoryData.length;
+
+
+            const productsInStock =
+                inventoryData.filter(
+                    item =>
+                        Number(
+                            item.quantity || 0
+                        ) > 0
+                ).length;
+
+
+            const totalQuantity =
+                inventoryData.reduce(
+                    function(total, item) {
+
+                        return total +
+                            Number(
+                                item.quantity || 0
+                            );
+
+                    },
+                    0
+                );
+
+
+            const totalStockValue =
+                inventoryData.reduce(
+                    function(total, item) {
+
+                        const quantity =
+                            Number(
+                                item.quantity || 0
+                            );
+
+                        const price =
+                            Number(
+                                item.price || 0
+                            );
+
+                        const value =
+                            Number(
+                                item.stock_value ??
+                                quantity * price
+                            );
+
+                        return total + value;
+
+                    },
+                    0
+                );
+
+
+            document.getElementById(
+                "totalProducts"
+            ).textContent =
+                totalProducts;
+
+
+            document.getElementById(
+                "productsInStock"
+            ).textContent =
+                productsInStock;
+
+
+            document.getElementById(
+                "totalQuantity"
+            ).textContent =
+                totalQuantity;
+
+
+            document.getElementById(
+                "totalStockValue"
+            ).textContent =
+                "₹" +
+                totalStockValue.toFixed(2);
+
+        }
+
+
+        /* ================= SEARCH + FILTER ================= */
+
+        function filterInventory() {
+
+            const search =
+                document.getElementById(
+                    "searchInventory"
+                ).value
+                .toLowerCase()
+                .trim();
+
+
+            const filter =
+                document.getElementById(
+                    "stockFilter"
+                ).value;
+
+
+            const filtered =
+                inventoryData.filter(
+                    function(item) {
+
+                        const productId =
+                            String(
+                                item.product_id ?? ""
+                            ).toLowerCase();
+
+
+                        const productName =
+                            String(
+                                item.product_name ?? ""
+                            ).toLowerCase();
+
+
+                        const quantity =
+                            Number(
+                                item.quantity || 0
+                            );
+
+
+                        const matchesSearch =
+                            productId.includes(search) ||
+                            productName.includes(search);
+
+
+                        let matchesFilter = true;
+
+
+                        if (filter === "GOOD") {
+
+                            matchesFilter =
+                                quantity > 10;
+
+                        }
+
+                        else if (filter === "LOW") {
+
+                            matchesFilter =
+                                quantity > 0 &&
+                                quantity <= 10;
+
+                        }
+
+                        else if (filter === "OUT") {
+
+                            matchesFilter =
+                                quantity <= 0;
+
+                        }
+
+
+                        return (
+                            matchesSearch &&
+                            matchesFilter
+                        );
+
+                    }
+                );
+
+
+            displayInventory(filtered);
+
+        }
+
+
+        /* ================= ADD STOCK MOVEMENT ================= */
+
+        async function addStockMovement() {
+
+            const productId =
+                Number(
+                    document.getElementById(
+                        "movementProductId"
+                    ).value
+                );
+
+
+            const movementType =
+                document.getElementById(
+                    "movementType"
+                ).value;
+
+
+            const quantity =
+                Number(
+                    document.getElementById(
+                        "movementQuantity"
+                    ).value
+                );
+
+
+            if (!productId) {
+
+                showMessage(
+                    "Please enter Product ID.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!quantity || quantity <= 0) {
+
+                showMessage(
+                    "Please enter a valid quantity.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                movementType !== "IN" &&
+                movementType !== "OUT"
+            ) {
+
+                showMessage(
+                    "Invalid movement type.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const product =
+                inventoryData.find(
+                    item =>
+                        Number(
+                            item.product_id
+                        ) === productId
+                );
+
+
+            if (!product) {
+
+                showMessage(
+                    "Product ID not found in inventory.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                movementType === "OUT" &&
+                quantity >
+                    Number(
+                        product.quantity || 0
+                    )
+            ) {
+
+                showMessage(
+                    "OUT quantity cannot be greater than available stock.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/stock-movements",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                product_id:
+                                    productId,
+
+                                movement_type:
+                                    movementType,
+
+                                quantity:
+                                    quantity
+
+                            })
+                        }
+                    );
+
+
+                let data = {};
+
+                try {
+                    data =
+                        await response.json();
+                }
+                catch (e) {
+                    data = {};
+                }
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.message ||
+                        data.error ||
+                        "Stock update failed.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                showMessage(
+                    "Stock updated successfully!",
+                    "success"
+                );
+
+
+                document.getElementById(
+                    "movementProductId"
+                ).value = "";
+
+
+                document.getElementById(
+                    "movementQuantity"
+                ).value = "";
+
+
+                await loadInventory();
+
+                await loadMovementHistory();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Stock Movement Error:",
+                    error
+                );
+
+                showMessage(
+                    "Something went wrong while updating stock.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* ================= MESSAGE ================= */
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            const messageElement =
+                document.getElementById(
+                    "movementMessage"
+                );
+
+
+            messageElement.textContent =
+                message;
+
+
+            messageElement.className =
+                "message " + type;
+
+
+            setTimeout(
+                function() {
+
+                    messageElement.className =
+                        "message";
+
+                },
+                4000
+            );
+
+        }
+        /* ================= MOVEMENT HISTORY ================= */
+
+        async function loadMovementHistory() {
+
+            const tableBody =
+                document.getElementById(
+                    "movementTableBody"
+                );
+
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="loading">
+                        Loading movement history...
+                    </td>
+                </tr>
+            `;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/stock-movements"
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load movements"
+                    );
+
+                }
+
+
+                const movements =
+                    await response.json();
+
+
+                tableBody.innerHTML = "";
+
+
+                if (
+                    !Array.isArray(movements) ||
+                    movements.length === 0
+                ) {
+
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="loading">
+                                No stock movements found.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                movements
+                    .slice()
+                    .reverse()
+                    .forEach(
+                        function(movement) {
+
+                            const row =
+                                document.createElement(
+                                    "tr"
+                                );
+
+
+                            const type =
+                                String(
+                                    movement.movement_type ||
+                                    movement.type ||
+                                    ""
+                                ).toUpperCase();
+
+
+                            const quantity =
+                                Number(
+                                    movement.quantity ||
+                                    0
+                                );
+
+
+                            const typeClass =
+                                type === "IN"
+                                    ? "movement-in"
+                                    : "movement-out";
+
+
+                            const date =
+                                movement.created_at ||
+                                movement.timestamp ||
+                                movement.date ||
+                                "-";
+
+
+                            row.innerHTML = `
+
+                                <td>
+                                    ${
+                                        movement.id ??
+                                        "-"
+                                    }
+                                </td>
+
+                                <td>
+                                    ${
+                                        movement.product_id ??
+                                        "-"
+                                    }
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="${typeClass}"
+                                    >
+
+                                        ${
+                                            type === "IN"
+                                                ? "⬆ IN"
+                                                : "⬇ OUT"
+                                        }
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    ${quantity}
+                                </td>
+
+                                <td>
+                                    ${formatDate(date)}
+                                </td>
+
+                            `;
+
+
+                            tableBody.appendChild(
+                                row
+                            );
+
+                        }
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Movement History Error:",
+                    error
+                );
+
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="loading">
+                            Stock movement history is not available.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        /* ================= FORMAT DATE ================= */
+
+        function formatDate(dateValue) {
+
+            if (
+                !dateValue ||
+                dateValue === "-"
+            ) {
+
+                return "-";
+
+            }
+
+
+            const date =
+                new Date(dateValue);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return dateValue;
+
+            }
+
+
+            return date.toLocaleString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        /* ================= ENTER KEY ================= */
+
+        document.getElementById(
+            "movementQuantity"
+        ).addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    addStockMovement();
+
+                }
+
+            }
+        );
+
+
+        document.getElementById(
+            "movementProductId"
+        ).addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    addStockMovement();
+
+                }
+
+            }
+        );
+
+
+        /* ================= INITIAL LOAD ================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadCurrentDate();
+
+                loadInventory();
+
+                loadMovementHistory();
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

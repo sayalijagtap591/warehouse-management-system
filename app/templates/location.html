@@ -1,0 +1,1702 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Locations - Warehouse Management System</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+
+        font-family: Arial, sans-serif;
+
+        background: #f4f6f8;
+
+        color: #1f2937;
+
+        font-size: 14px;
+      }
+
+      /* ================= SIDEBAR ================= */
+
+      .sidebar {
+        position: fixed;
+
+        left: 0;
+
+        top: 0;
+
+        width: 220px;
+
+        height: 100vh;
+
+        background: #111827;
+
+        color: white;
+
+        padding: 20px 15px;
+
+        overflow-y: auto;
+
+        z-index: 1000;
+      }
+
+      .sidebar h2 {
+        margin: 5px 5px 5px;
+
+        font-size: 20px;
+      }
+
+      .sidebar .subtitle {
+        color: #9ca3af;
+
+        font-size: 12px;
+
+        margin: 0 5px 25px;
+      }
+
+      .sidebar a {
+        display: block;
+
+        color: #e5e7eb;
+
+        text-decoration: none;
+
+        padding: 11px 12px;
+
+        margin: 5px 0;
+
+        border-radius: 7px;
+
+        font-size: 14px;
+
+        transition: 0.2s;
+      }
+
+      .sidebar a:hover {
+        background: #2563eb;
+
+        color: white;
+      }
+
+      .sidebar a.active {
+        background: #2563eb;
+
+        color: white;
+
+        font-weight: bold;
+      }
+
+      .logout {
+        margin-top: 20px !important;
+
+        border-top: 1px solid #374151;
+
+        padding-top: 15px !important;
+      }
+
+      /* ================= MAIN CONTENT ================= */
+
+      .main-content {
+        margin-left: 220px;
+
+        width: calc(100% - 220px);
+
+        min-height: 100vh;
+
+        padding: 30px;
+
+        background: #f4f6f8;
+      }
+
+      /* ================= TOP BAR ================= */
+
+      .topbar {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 25px;
+      }
+
+      .topbar h1 {
+        margin: 0;
+
+        font-size: 26px;
+
+        color: #111827;
+      }
+
+      .date {
+        color: #6b7280;
+
+        font-size: 13px;
+      }
+
+      /* ================= PAGE HEADER ================= */
+
+      .page-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 20px;
+      }
+
+      .page-header h2 {
+        margin: 0;
+
+        font-size: 20px;
+      }
+
+      .page-header p {
+        margin: 5px 0 0;
+
+        color: #6b7280;
+      }
+
+      /* ================= SUMMARY ================= */
+
+      .summary-grid {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 25px;
+      }
+
+      .summary-card {
+        background: white;
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+        border-left: 5px solid #2563eb;
+      }
+
+      .summary-card.warehouse {
+        border-left-color: #16a34a;
+      }
+
+      .summary-card.code {
+        border-left-color: #f59e0b;
+      }
+
+      .summary-title {
+        color: #6b7280;
+
+        font-size: 13px;
+
+        margin-bottom: 8px;
+      }
+
+      .summary-value {
+        font-size: 25px;
+
+        font-weight: bold;
+
+        color: #111827;
+      }
+
+      /* ================= TOOLBAR ================= */
+
+      .toolbar {
+        background: white;
+
+        padding: 15px;
+
+        border-radius: 10px;
+
+        margin-bottom: 20px;
+
+        display: flex;
+
+        gap: 10px;
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .search-box {
+        flex: 1;
+
+        min-width: 220px;
+
+        padding: 10px 12px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 6px;
+
+        outline: none;
+      }
+
+      .search-box:focus {
+        border-color: #2563eb;
+      }
+
+      .filter-select {
+        padding: 10px 12px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 6px;
+
+        background: white;
+      }
+
+      /* ================= BUTTONS ================= */
+
+      button {
+        border: none;
+
+        padding: 9px 14px;
+
+        border-radius: 6px;
+
+        cursor: pointer;
+
+        font-size: 13px;
+
+        transition: 0.2s;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .btn-primary {
+        background: #2563eb;
+
+        color: white;
+      }
+
+      .btn-success {
+        background: #16a34a;
+
+        color: white;
+      }
+
+      .btn-danger {
+        background: #dc2626;
+
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #6b7280;
+
+        color: white;
+      }
+
+      .btn-edit {
+        background: #f59e0b;
+
+        color: white;
+      }
+
+      /* ================= CARD ================= */
+
+      .card {
+        background: white;
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        margin-bottom: 25px;
+
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 15px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+
+        font-size: 18px;
+      }
+
+      /* ================= FORM ================= */
+
+      .form-box {
+        background: #f9fafb;
+
+        border: 1px solid #e5e7eb;
+
+        padding: 20px;
+
+        border-radius: 8px;
+
+        margin-bottom: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 6px;
+      }
+
+      .form-group label {
+        font-size: 12px;
+
+        font-weight: bold;
+
+        color: #374151;
+      }
+
+      .form-group input {
+        padding: 10px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 6px;
+
+        outline: none;
+
+        width: 100%;
+      }
+
+      .form-group input:focus {
+        border-color: #2563eb;
+      }
+
+      .form-actions {
+        margin-top: 15px;
+
+        display: flex;
+
+        gap: 8px;
+      }
+
+      /* ================= TABLE ================= */
+
+      .table-wrapper {
+        width: 100%;
+
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        background: white;
+
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+
+        border-bottom: 1px solid #e5e7eb;
+
+        text-align: left;
+      }
+
+      th {
+        background: #111827;
+
+        color: white;
+
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background: #f9fafb;
+      }
+
+      /* ================= LOCATION BADGE ================= */
+
+      .location-badge {
+        display: inline-block;
+
+        padding: 5px 9px;
+
+        border-radius: 20px;
+
+        background: #dbeafe;
+
+        color: #1d4ed8;
+
+        font-size: 11px;
+
+        font-weight: bold;
+      }
+
+      /* ================= ACTION BUTTONS ================= */
+
+      .action-buttons {
+        display: flex;
+
+        gap: 5px;
+
+        flex-wrap: wrap;
+      }
+
+      /* ================= MESSAGE ================= */
+
+      .message {
+        display: none;
+
+        margin-bottom: 15px;
+
+        padding: 10px;
+
+        border-radius: 6px;
+      }
+
+      .message.success {
+        display: block;
+
+        background: #dcfce7;
+
+        color: #166534;
+      }
+
+      .message.error {
+        display: block;
+
+        background: #fee2e2;
+
+        color: #991b1b;
+      }
+
+      /* ================= LOADING ================= */
+
+      .loading {
+        text-align: center;
+
+        padding: 25px;
+
+        color: #6b7280;
+      }
+
+      /* ================= BACK ================= */
+
+      .back {
+        display: inline-block;
+
+        margin-bottom: 15px;
+
+        color: #2563eb;
+
+        text-decoration: none;
+
+        font-size: 13px;
+      }
+
+      .back:hover {
+        text-decoration: underline;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1000px) {
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .form-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          width: 180px;
+        }
+
+        .main-content {
+          margin-left: 180px;
+
+          width: calc(100% - 180px);
+
+          padding: 15px;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-direction: column;
+
+          align-items: flex-start;
+
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+      <h2>📦 WarehousePro</h2>
+
+      <div class="subtitle">Management System</div>
+
+      <a href="/"> 🏠 Dashboard </a>
+
+      <a href="/products"> 📦 Products </a>
+
+      <a href="/inventory"> 📊 Inventory </a>
+
+      <a href="/warehouses-page"> 🏭 Warehouses </a>
+
+      <a href="/locations-page" class="active"> 📍 Locations </a>
+
+      <a href="/orders-page"> 🛒 Orders </a>
+
+      <a href="/shipments-page"> 🚚 Shipments </a>
+
+      <a href="/receivings-page"> 📥 Receivings </a>
+
+      <a href="/reports-page"> 📈 Reports </a>
+
+      <a href="/login" class="logout"> 🚪 Logout </a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <div class="main-content">
+      <!-- TOP BAR -->
+
+      <div class="topbar">
+        <h1>Location Management</h1>
+
+        <div class="date" id="currentDate">Loading date...</div>
+      </div>
+
+      <a class="back" href="/"> ← Back to Dashboard </a>
+
+      <!-- PAGE HEADER -->
+
+      <div class="page-header">
+        <div>
+          <h2>Warehouse Locations</h2>
+
+          <p>Manage storage locations inside your warehouses.</p>
+        </div>
+
+        <button class="btn-primary" onclick="showLocationForm()">
+          + Add Location
+        </button>
+      </div>
+
+      <!-- SUMMARY -->
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-title">Total Locations</div>
+
+          <div class="summary-value" id="totalLocations">0</div>
+        </div>
+
+        <div class="summary-card warehouse">
+          <div class="summary-title">Warehouses Used</div>
+
+          <div class="summary-value" id="totalWarehouses">0</div>
+        </div>
+
+        <div class="summary-card code">
+          <div class="summary-title">Location Codes</div>
+
+          <div class="summary-value" id="totalCodes">0</div>
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+
+      <div id="locationMessage" class="message"></div>
+
+      <!-- ADD / EDIT FORM -->
+
+      <div id="locationForm" class="form-box" style="display: none">
+        <h2 id="formTitle">Add New Location</h2>
+
+        <input type="hidden" id="editLocationId" />
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label> Warehouse ID * </label>
+
+            <input
+              type="number"
+              id="locationWarehouse"
+              placeholder="Enter Warehouse ID"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Location Code * </label>
+
+            <input type="text" id="locationCode" placeholder="Example: A-01" />
+          </div>
+
+          <div class="form-group">
+            <label> Description </label>
+
+            <input
+              type="text"
+              id="locationDescription"
+              placeholder="Example: Storage Area A"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            class="btn-success"
+            onclick="saveLocation()"
+            id="saveLocationButton"
+          >
+            Save Location
+          </button>
+
+          <button class="btn-secondary" onclick="hideLocationForm()">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- SEARCH / FILTER -->
+
+      <div class="toolbar">
+        <input
+          type="text"
+          id="searchLocation"
+          class="search-box"
+          placeholder="Search location code, description or warehouse ID..."
+          onkeyup="filterLocations()"
+        />
+
+        <button class="btn-primary" onclick="loadLocations()">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- LOCATIONS TABLE -->
+
+      <div class="card">
+        <div class="card-header">
+          <h2>📍 All Locations</h2>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+
+                <th>Warehouse ID</th>
+
+                <th>Location Code</th>
+
+                <th>Description</th>
+
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="locationTableBody">
+              <tr>
+                <td colspan="5" class="loading">Loading locations...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+
+
+        /* =========================
+           GLOBAL DATA
+        ========================= */
+
+        let locationsData = [];
+
+
+        /* =========================
+           CURRENT DATE
+        ========================= */
+
+        function loadCurrentDate() {
+
+            const dateElement =
+                document.getElementById(
+                    "currentDate"
+                );
+
+
+            const today =
+                new Date();
+
+
+            dateElement.textContent =
+                today.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
+
+        }
+
+
+        /* =========================
+           LOAD LOCATIONS
+        ========================= */
+
+        async function loadLocations() {
+
+            const tableBody =
+                document.getElementById(
+                    "locationTableBody"
+                );
+
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="loading"
+                    >
+                        Loading locations...
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/locations"
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load locations"
+                    );
+
+                }
+
+
+                const locations =
+                    await response.json();
+
+
+                locationsData =
+                    Array.isArray(
+                        locations
+                    )
+                        ? locations
+                        : [];
+
+
+                updateLocationSummary();
+
+
+                displayLocations(
+                    locationsData
+                );
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Location Error:",
+                    error
+                );
+
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="loading"
+                        >
+                            ❌ Failed to load locations
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =========================
+           DISPLAY LOCATIONS
+        ========================= */
+
+        function displayLocations(
+            locations
+        ) {
+
+            const tableBody =
+                document.getElementById(
+                    "locationTableBody"
+                );
+
+
+            tableBody.innerHTML = "";
+
+
+            if (
+                !locations ||
+                locations.length === 0
+            ) {
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="loading"
+                        >
+                            No locations found.
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            locations.forEach(
+                function(location) {
+
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    row.innerHTML = `
+
+                        <td>
+                            ${location.id ?? "-"}
+                        </td>
+
+
+                        <td>
+                            ${location.warehouse_id ?? "-"}
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="location-badge"
+                            >
+                                ${location.location_code ?? "-"}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${location.description ?? "-"}
+                        </td>
+
+
+                        <td>
+
+                            <div
+                                class="action-buttons"
+                            >
+
+                                <button
+                                    class="btn-edit"
+                                    onclick="editLocation(${location.id})"
+                                >
+                                    ✏ Edit
+                                </button>
+
+
+                                <button
+                                    class="btn-danger"
+                                    onclick="deleteLocation(${location.id})"
+                                >
+                                    🗑 Delete
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    `;
+
+
+                    tableBody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================
+           SUMMARY
+        ========================= */
+
+        function updateLocationSummary() {
+
+            const totalLocations =
+                locationsData.length;
+
+
+            const warehouses =
+                new Set(
+                    locationsData
+                        .map(
+                            location =>
+                                location.warehouse_id
+                        )
+                        .filter(
+                            id =>
+                                id !== null &&
+                                id !== undefined
+                        )
+                );
+
+
+            const totalWarehouses =
+                warehouses.size;
+
+
+            const totalCodes =
+                locationsData.filter(
+                    location =>
+                        location.location_code
+                ).length;
+
+
+            document.getElementById(
+                "totalLocations"
+            ).textContent =
+                totalLocations;
+
+
+            document.getElementById(
+                "totalWarehouses"
+            ).textContent =
+                totalWarehouses;
+
+
+            document.getElementById(
+                "totalCodes"
+            ).textContent =
+                totalCodes;
+
+        }
+
+
+        /* =========================
+           SHOW FORM
+        ========================= */
+
+        function showLocationForm() {
+
+            document.getElementById(
+                "locationForm"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "formTitle"
+            ).textContent =
+                "Add New Location";
+
+
+            document.getElementById(
+                "saveLocationButton"
+            ).textContent =
+                "Save Location";
+
+
+            document.getElementById(
+                "editLocationId"
+            ).value = "";
+
+        }
+
+
+        /* =========================
+           HIDE FORM
+        ========================= */
+
+        function hideLocationForm() {
+
+            document.getElementById(
+                "locationForm"
+            ).style.display =
+                "none";
+
+
+            clearLocationForm();
+
+        }
+
+
+        /* =========================
+           CLEAR FORM
+        ========================= */
+
+        function clearLocationForm() {
+
+            document.getElementById(
+                "editLocationId"
+            ).value = "";
+
+
+            document.getElementById(
+                "locationWarehouse"
+            ).value = "";
+
+
+            document.getElementById(
+                "locationCode"
+            ).value = "";
+
+
+            document.getElementById(
+                "locationDescription"
+            ).value = "";
+
+
+            document.getElementById(
+                "formTitle"
+            ).textContent =
+                "Add New Location";
+
+
+            document.getElementById(
+                "saveLocationButton"
+            ).textContent =
+                "Save Location";
+
+        }
+
+
+        /* =========================
+           SAVE LOCATION
+        ========================= */
+
+        async function saveLocation() {
+
+            const editId =
+                document.getElementById(
+                    "editLocationId"
+                ).value;
+
+
+            const warehouseId =
+                Number(
+                    document.getElementById(
+                        "locationWarehouse"
+                    ).value
+                );
+
+
+            const locationCode =
+                document.getElementById(
+                    "locationCode"
+                )
+                .value
+                .trim();
+
+
+            const description =
+                document.getElementById(
+                    "locationDescription"
+                )
+                .value
+                .trim();
+
+
+            /* VALIDATION */
+
+            if (!warehouseId) {
+
+                showMessage(
+                    "Please enter Warehouse ID.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!locationCode) {
+
+                showMessage(
+                    "Please enter Location Code.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                let response;
+
+
+                /* EDIT */
+
+                if (editId) {
+
+                    response =
+                        await fetch(
+                            `/locations/${editId}`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        warehouse_id:
+                                            warehouseId,
+
+                                        location_code:
+                                            locationCode,
+
+                                        description:
+                                            description
+
+                                    })
+
+                            }
+                        );
+
+                }
+
+
+                /* ADD */
+
+                else {
+
+                    response =
+                        await fetch(
+                            "/locations",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        warehouse_id:
+                                            warehouseId,
+
+                                        location_code:
+                                            locationCode,
+
+                                        description:
+                                            description
+
+                                    })
+
+                            }
+                        );
+
+                }
+
+
+                let data = {};
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch (e) {
+
+                    data = {};
+
+                }
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.message ||
+                        data.error ||
+                        "Operation failed.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (editId) {
+
+                    showMessage(
+                        "Location updated successfully!",
+                        "success"
+                    );
+
+                }
+
+                else {
+
+                    showMessage(
+                        "Location added successfully!",
+                        "success"
+                    );
+
+                }
+
+
+                hideLocationForm();
+
+
+                await loadLocations();
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Save Location Error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Something went wrong.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           EDIT LOCATION
+        ========================= */
+
+        function editLocation(id) {
+
+            const location =
+                locationsData.find(
+                    item =>
+                        Number(item.id) ===
+                        Number(id)
+                );
+
+
+            if (!location) {
+
+                showMessage(
+                    "Location not found.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "locationForm"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "formTitle"
+            ).textContent =
+                "Edit Location";
+
+
+            document.getElementById(
+                "saveLocationButton"
+            ).textContent =
+                "Update Location";
+
+
+            document.getElementById(
+                "editLocationId"
+            ).value =
+                location.id;
+
+
+            document.getElementById(
+                "locationWarehouse"
+            ).value =
+                location.warehouse_id ?? "";
+
+
+            document.getElementById(
+                "locationCode"
+            ).value =
+                location.location_code ?? "";
+
+
+            document.getElementById(
+                "locationDescription"
+            ).value =
+                location.description ?? "";
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+        /* =========================
+           DELETE LOCATION
+        ========================= */
+
+        async function deleteLocation(id) {
+
+            const location =
+                locationsData.find(
+                    item =>
+                        Number(item.id) ===
+                        Number(id)
+                );
+
+
+            const locationName =
+                location
+                    ? location.location_code
+                    : id;
+
+
+            const confirmed =
+                confirm(
+                    `Are you sure you want to delete location "${locationName}"?`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/locations/${id}`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+
+                let data = {};
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch (e) {
+
+                    data = {};
+
+                }
+
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.message ||
+                        data.error ||
+                        "Failed to delete location.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                showMessage(
+                    "Location deleted successfully!",
+                    "success"
+                );
+
+
+                await loadLocations();
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Delete Location Error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Something went wrong while deleting.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           SEARCH LOCATIONS
+        ========================= */
+
+        function filterLocations() {
+
+            const search =
+                document.getElementById(
+                    "searchLocation"
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+            if (!search) {
+
+                displayLocations(
+                    locationsData
+                );
+
+                return;
+
+            }
+
+
+            const filtered =
+                locationsData.filter(
+                    function(location) {
+
+                        const id =
+                            String(
+                                location.id ?? ""
+                            )
+                            .toLowerCase();
+
+
+                        const warehouseId =
+                            String(
+                                location.warehouse_id ?? ""
+                            )
+                            .toLowerCase();
+
+
+                        const code =
+                            String(
+                                location.location_code ?? ""
+                            )
+                            .toLowerCase();
+
+
+                        const description =
+                            String(
+                                location.description ?? ""
+                            )
+                            .toLowerCase();
+
+
+                        return (
+
+                            id.includes(search) ||
+
+                            warehouseId.includes(search) ||
+
+                            code.includes(search) ||
+
+                            description.includes(search)
+
+                        );
+
+                    }
+                );
+
+
+            displayLocations(
+                filtered
+            );
+
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            const messageElement =
+                document.getElementById(
+                    "locationMessage"
+                );
+
+
+            messageElement.textContent =
+                message;
+
+
+            messageElement.className =
+                "message " + type;
+
+
+            setTimeout(
+                function() {
+
+                    messageElement.className =
+                        "message";
+
+                },
+                4000
+            );
+
+        }
+
+
+        /* =========================
+           ENTER KEY
+        ========================= */
+
+        document.getElementById(
+            "locationCode"
+        ).addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    saveLocation();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           INITIAL LOAD
+        ========================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadCurrentDate();
+
+                loadLocations();
+
+            }
+        );
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1520 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Receivings - Warehouse Management System</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f5f7fb;
+        color: #111827;
+      }
+
+      /* ================= SIDEBAR ================= */
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: #111827;
+        color: white;
+        padding: 20px 12px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar-title {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #374151;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #d1d5db;
+        text-decoration: none;
+        padding: 12px 14px;
+        margin-bottom: 6px;
+        border-radius: 7px;
+        transition: 0.2s;
+      }
+
+      .sidebar a:hover {
+        background: #1f2937;
+        color: white;
+      }
+
+      .sidebar a.active {
+        background: #2563eb;
+        color: white;
+      }
+
+      /* ================= MAIN ================= */
+
+      .main-content {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+        min-height: 100vh;
+        padding: 30px;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      .page-header p {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      .date {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      /* ================= SUMMARY ================= */
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+
+      .summary-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .summary-card h3 {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .summary-card .number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #111827;
+      }
+
+      /* ================= TOOLBAR ================= */
+
+      .toolbar {
+        background: white;
+        padding: 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .search-box {
+        flex: 1;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        outline: none;
+      }
+
+      .search-box input:focus {
+        border-color: #2563eb;
+      }
+
+      button {
+        border: none;
+        border-radius: 6px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .add-btn {
+        background: #2563eb;
+        color: white;
+      }
+
+      .add-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .refresh-btn {
+        background: #6b7280;
+        color: white;
+      }
+
+      .refresh-btn:hover {
+        background: #4b5563;
+      }
+
+      /* ================= MESSAGE ================= */
+
+      .message {
+        display: none;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
+      .message.success {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .message.error {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* ================= FORM ================= */
+
+      #receivingForm {
+        display: none;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      #receivingForm h2 {
+        margin-bottom: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 7px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .form-group input {
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        outline: none;
+      }
+
+      .form-group input:focus {
+        border-color: #2563eb;
+      }
+
+      .form-actions {
+        margin-top: 20px;
+      }
+
+      .save-btn {
+        background: #16a34a;
+        color: white;
+      }
+
+      .save-btn:hover {
+        background: #15803d;
+      }
+
+      .cancel-btn {
+        background: #dc2626;
+        color: white;
+        margin-left: 5px;
+      }
+
+      .cancel-btn:hover {
+        background: #b91c1c;
+      }
+
+      /* ================= TABLE ================= */
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #1f2937;
+        color: white;
+        padding: 14px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      td {
+        padding: 13px 14px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+      }
+
+      tr:hover {
+        background: #f9fafb;
+      }
+
+      .quantity-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 6px;
+      }
+
+      .edit-btn {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .edit-btn:hover {
+        background: #d97706;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+      }
+
+      .delete-btn:hover {
+        background: #b91c1c;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1000px) {
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          width: 180px;
+        }
+
+        .main-content {
+          margin-left: 180px;
+          width: calc(100% - 180px);
+          padding: 20px;
+        }
+
+        .page-header {
+          display: block;
+        }
+
+        .date {
+          margin-top: 8px;
+        }
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ================= SIDEBAR ================= -->
+
+    <div class="sidebar">
+      <div class="sidebar-title">📦 WarehousePro</div>
+
+      <a href="/"> 🏠 Dashboard </a>
+
+      <a href="/products"> 📦 Products </a>
+
+      <a href="/inventory"> 📊 Inventory </a>
+
+      <a href="/warehouses-page"> 🏭 Warehouses </a>
+
+      <a href="/locations-page"> 📍 Locations </a>
+
+      <a href="/orders-page"> 🛒 Orders </a>
+
+      <a href="/shipments-page"> 🚚 Shipments </a>
+
+      <a href="/receivings-page" class="active"> 📥 Receivings </a>
+
+      <a href="/reports-page"> 📈 Reports </a>
+
+      <a href="/login"> 🔐 Logout </a>
+    </div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Receivings Management</h1>
+
+          <p>Manage incoming products and receiving records</p>
+        </div>
+
+        <div class="date" id="currentDate"></div>
+      </div>
+
+      <!-- ================= SUMMARY ================= -->
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <h3>Total Receivings</h3>
+
+          <div class="number" id="totalReceivings">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Total Quantity</h3>
+
+          <div class="number" id="totalQuantity">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Products Received</h3>
+
+          <div class="number" id="productsReceived">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Latest Receiving</h3>
+
+          <div class="number" id="latestReceiving">-</div>
+        </div>
+      </div>
+
+      <!-- ================= MESSAGE ================= -->
+
+      <div id="receivingMessage" class="message"></div>
+
+      <!-- ================= TOOLBAR ================= -->
+
+      <div class="toolbar">
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchReceiving"
+            placeholder="Search by receiving number, product ID or quantity..."
+            oninput="filterReceivings()"
+          />
+        </div>
+
+        <button class="refresh-btn" onclick="loadReceivings()">
+          🔄 Refresh
+        </button>
+
+        <button class="add-btn" onclick="showAddReceivingForm()">
+          + Add Receiving
+        </button>
+      </div>
+
+      <!-- ================= FORM ================= -->
+
+      <div id="receivingForm">
+        <h2 id="formTitle">Add New Receiving</h2>
+
+        <input type="hidden" id="editReceivingId" />
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label> Receiving Number </label>
+
+            <input
+              type="text"
+              id="receivingNumber"
+              placeholder="Enter receiving number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Product ID </label>
+
+            <input
+              type="number"
+              id="receivingProductId"
+              placeholder="Enter product ID"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Quantity </label>
+
+            <input
+              type="number"
+              id="receivingQuantity"
+              placeholder="Enter quantity"
+              min="1"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            class="save-btn"
+            id="saveReceivingButton"
+            onclick="saveReceiving()"
+          >
+            Save Receiving
+          </button>
+
+          <button class="cancel-btn" onclick="hideReceivingForm()">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= TABLE ================= -->
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+
+              <th>Receiving Number</th>
+
+              <th>Product ID</th>
+
+              <th>Quantity</th>
+
+              <th>Created At</th>
+
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="receivingTableBody">
+            <tr>
+              <td colspan="6" class="loading">Loading receivings...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+
+    let receivingsData = [];
+
+
+    /* ================= DATE ================= */
+
+    function loadCurrentDate() {
+
+        const dateElement =
+            document.getElementById("currentDate");
+
+        const today = new Date();
+
+        dateElement.textContent =
+            today.toLocaleDateString("en-IN", {
+
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+
+            });
+    }
+
+
+    /* ================= LOAD RECEIVINGS ================= */
+
+    async function loadReceivings() {
+
+        const tableBody =
+            document.getElementById(
+                "receivingTableBody"
+            );
+
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="loading">
+                    Loading receivings...
+                </td>
+            </tr>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch("/receivings");
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load receivings"
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Receivings:",
+                data
+            );
+
+
+            const receivings =
+                Array.isArray(data)
+                    ? data
+                    : (
+                        Array.isArray(data.receivings)
+                            ? data.receivings
+                            : []
+                    );
+
+
+            receivingsData =
+                receivings;
+
+
+            updateReceivingSummary();
+
+            displayReceivings(
+                receivingsData
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Load Receivings Error:",
+                error
+            );
+
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        ❌ Failed to load receivings
+                    </td>
+                </tr>
+            `;
+
+
+            showMessage(
+                "Failed to load receivings.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= DISPLAY ================= */
+
+    function displayReceivings(
+        receivings
+    ) {
+
+        const tableBody =
+            document.getElementById(
+                "receivingTableBody"
+            );
+
+
+        tableBody.innerHTML = "";
+
+
+        if (
+            !receivings ||
+            receivings.length === 0
+        ) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        No receiving records found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        receivings.forEach(
+            function(receiving) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const quantity =
+                    Number(
+                        receiving.quantity || 0
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${receiving.id ?? "-"}
+                    </td>
+
+
+                    <td>
+                        ${receiving.receiving_number || "-"}
+                    </td>
+
+
+                    <td>
+                        ${receiving.product_id ?? "-"}
+                    </td>
+
+
+                    <td>
+
+                        <span class="quantity-badge">
+                            ${quantity}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+                        ${formatDate(
+                            receiving.created_at
+                        )}
+                    </td>
+
+
+                    <td>
+
+                        <div class="action-buttons">
+
+                            <button
+                                class="edit-btn"
+                                onclick="editReceiving(${receiving.id})">
+
+                                ✏ Edit
+
+                            </button>
+
+
+                            <button
+                                class="delete-btn"
+                                onclick="deleteReceiving(${receiving.id})">
+
+                                🗑 Delete
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(row);
+
+            }
+        );
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    function updateReceivingSummary() {
+
+        const totalReceivings =
+            receivingsData.length;
+
+
+        const totalQuantity =
+            receivingsData.reduce(
+                function(total, receiving) {
+
+                    return total +
+                        Number(
+                            receiving.quantity || 0
+                        );
+
+                },
+                0
+            );
+
+
+        const uniqueProducts =
+            new Set(
+                receivingsData
+                    .map(
+                        function(receiving) {
+                            return receiving.product_id;
+                        }
+                    )
+                    .filter(
+                        function(id) {
+                            return (
+                                id !== null &&
+                                id !== undefined
+                            );
+                        }
+                    )
+            );
+
+
+        let latest =
+            "-";
+
+
+        if (receivingsData.length > 0) {
+
+            const sorted =
+                [...receivingsData].sort(
+                    function(a, b) {
+
+                        return new Date(
+                            b.created_at || 0
+                        ) -
+                        new Date(
+                            a.created_at || 0
+                        );
+
+                    }
+                );
+
+
+            if (sorted[0]) {
+
+                latest =
+                    sorted[0].receiving_number
+                    || "-";
+            }
+        }
+
+
+        document.getElementById(
+            "totalReceivings"
+        ).textContent =
+            totalReceivings;
+
+
+        document.getElementById(
+            "totalQuantity"
+        ).textContent =
+            totalQuantity;
+
+
+        document.getElementById(
+            "productsReceived"
+        ).textContent =
+            uniqueProducts.size;
+
+
+        document.getElementById(
+            "latestReceiving"
+        ).textContent =
+            latest;
+    }
+
+
+    /* ================= SHOW FORM ================= */
+
+    function showAddReceivingForm() {
+
+        document.getElementById(
+            "receivingForm"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Add New Receiving";
+
+
+        document.getElementById(
+            "saveReceivingButton"
+        ).textContent =
+            "Save Receiving";
+
+
+        clearReceivingForm();
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    /* ================= HIDE FORM ================= */
+
+    function hideReceivingForm() {
+
+        document.getElementById(
+            "receivingForm"
+        ).style.display =
+            "none";
+
+
+        clearReceivingForm();
+    }
+
+
+    /* ================= CLEAR FORM ================= */
+
+    function clearReceivingForm() {
+
+        document.getElementById(
+            "editReceivingId"
+        ).value = "";
+
+
+        document.getElementById(
+            "receivingNumber"
+        ).value = "";
+
+
+        document.getElementById(
+            "receivingProductId"
+        ).value = "";
+
+
+        document.getElementById(
+            "receivingQuantity"
+        ).value = "";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Add New Receiving";
+
+
+        document.getElementById(
+            "saveReceivingButton"
+        ).textContent =
+            "Save Receiving";
+    }
+
+
+    /* ================= SAVE RECEIVING ================= */
+
+    async function saveReceiving() {
+
+        const editId =
+            document.getElementById(
+                "editReceivingId"
+            ).value;
+
+
+        const receivingNumber =
+            document.getElementById(
+                "receivingNumber"
+            ).value.trim();
+
+
+        const productId =
+            Number(
+                document.getElementById(
+                    "receivingProductId"
+                ).value
+            );
+
+
+        const quantity =
+            Number(
+                document.getElementById(
+                    "receivingQuantity"
+                ).value
+            );
+
+
+        /* ================= VALIDATION ================= */
+
+        if (!receivingNumber) {
+
+            showMessage(
+                "Please enter Receiving Number.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (
+            !productId ||
+            productId <= 0
+        ) {
+
+            showMessage(
+                "Please enter a valid Product ID.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (
+            !quantity ||
+            quantity <= 0
+        ) {
+
+            showMessage(
+                "Please enter a valid Quantity.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            let response;
+
+
+            /* ================= UPDATE ================= */
+
+            if (editId) {
+
+                response =
+                    await fetch(
+                        `/receivings/${editId}`,
+                        {
+
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                receiving_number:
+                                    receivingNumber,
+
+                                product_id:
+                                    productId,
+
+                                quantity:
+                                    quantity
+
+                            })
+
+                        }
+                    );
+
+            }
+
+
+            /* ================= ADD ================= */
+
+            else {
+
+                response =
+                    await fetch(
+                        "/receivings",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                receiving_number:
+                                    receivingNumber,
+
+                                product_id:
+                                    productId,
+
+                                quantity:
+                                    quantity
+
+                            })
+
+                        }
+                    );
+            }
+
+
+            let data = {};
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (error) {
+
+                data = {};
+
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Operation failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (editId) {
+
+                showMessage(
+                    "Receiving updated successfully!",
+                    "success"
+                );
+
+            } else {
+
+                showMessage(
+                    "Receiving added successfully!",
+                    "success"
+                );
+            }
+
+
+            hideReceivingForm();
+
+            await loadReceivings();
+
+
+        } catch (error) {
+
+            console.error(
+                "Save Receiving Error:",
+                error
+            );
+
+
+            showMessage(
+                "Something went wrong.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= EDIT RECEIVING ================= */
+
+    function editReceiving(id) {
+
+        const receiving =
+            receivingsData.find(
+                function(item) {
+
+                    return Number(item.id) ===
+                        Number(id);
+
+                }
+            );
+
+
+        if (!receiving) {
+
+            showMessage(
+                "Receiving record not found.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "receivingForm"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent =
+            "Edit Receiving";
+
+
+        document.getElementById(
+            "saveReceivingButton"
+        ).textContent =
+            "Update Receiving";
+
+
+        document.getElementById(
+            "editReceivingId"
+        ).value =
+            receiving.id;
+
+
+        document.getElementById(
+            "receivingNumber"
+        ).value =
+            receiving.receiving_number || "";
+
+
+        document.getElementById(
+            "receivingProductId"
+        ).value =
+            receiving.product_id ?? "";
+
+
+        document.getElementById(
+            "receivingQuantity"
+        ).value =
+            receiving.quantity ?? "";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+    /* ================= DELETE RECEIVING ================= */
+
+    async function deleteReceiving(id) {
+
+        const receiving =
+            receivingsData.find(
+                function(item) {
+
+                    return Number(item.id) ===
+                        Number(id);
+
+                }
+            );
+
+
+        const receivingNumber =
+            receiving
+                ? receiving.receiving_number
+                : id;
+
+
+        const confirmed =
+            confirm(
+                `Are you sure you want to delete receiving "${receivingNumber}"?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/receivings/${id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            let data = {};
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (error) {
+
+                data = {};
+
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Failed to delete receiving.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showMessage(
+                "Receiving deleted successfully!",
+                "success"
+            );
+
+
+            await loadReceivings();
+
+
+        } catch (error) {
+
+            console.error(
+                "Delete Receiving Error:",
+                error
+            );
+
+
+            showMessage(
+                "Something went wrong while deleting.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function filterReceivings() {
+
+        const search =
+            document.getElementById(
+                "searchReceiving"
+            ).value
+            .toLowerCase()
+            .trim();
+
+
+        if (!search) {
+
+            displayReceivings(
+                receivingsData
+            );
+
+            return;
+        }
+
+
+        const filtered =
+            receivingsData.filter(
+                function(receiving) {
+
+                    const id =
+                        String(
+                            receiving.id ?? ""
+                        ).toLowerCase();
+
+
+                    const receivingNumber =
+                        String(
+                            receiving.receiving_number ?? ""
+                        ).toLowerCase();
+
+
+                    const productId =
+                        String(
+                            receiving.product_id ?? ""
+                        ).toLowerCase();
+
+
+                    const quantity =
+                        String(
+                            receiving.quantity ?? ""
+                        ).toLowerCase();
+
+
+                    const createdAt =
+                        String(
+                            receiving.created_at ?? ""
+                        ).toLowerCase();
+
+
+                    return (
+                        id.includes(search) ||
+                        receivingNumber.includes(search) ||
+                        productId.includes(search) ||
+                        quantity.includes(search) ||
+                        createdAt.includes(search)
+                    );
+
+                }
+            );
+
+
+        displayReceivings(filtered);
+    }
+
+
+    /* ================= DATE FORMAT ================= */
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "-";
+        }
+
+
+        const date =
+            new Date(value);
+
+
+        if (Number.isNaN(
+            date.getTime()
+        )) {
+
+            return value;
+        }
+
+
+        return date.toLocaleString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+    }
+
+
+    /* ================= MESSAGE ================= */
+
+    function showMessage(
+        message,
+        type
+    ) {
+
+        const messageElement =
+            document.getElementById(
+                "receivingMessage"
+            );
+
+
+        messageElement.textContent =
+            message;
+
+
+        messageElement.className =
+            "message " + type;
+
+
+        setTimeout(
+            function() {
+
+                messageElement.className =
+                    "message";
+
+            },
+            4000
+        );
+    }
+
+
+    /* ================= ENTER KEY ================= */
+
+    document.getElementById(
+        "receivingQuantity"
+    ).addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                saveReceiving();
+
+            }
+
+        }
+    );
+
+
+    /* ================= PAGE LOAD ================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadCurrentDate();
+
+            loadReceivings();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

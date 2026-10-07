@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Orders Management</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f5f7fb;
+        color: #111827;
+      }
+
+      /* ================= SIDEBAR ================= */
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background: #111827;
+        color: white;
+        padding: 20px 12px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar-title {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #374151;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #d1d5db;
+        text-decoration: none;
+        padding: 12px 14px;
+        margin-bottom: 6px;
+        border-radius: 7px;
+        transition: 0.2s;
+      }
+
+      .sidebar a:hover {
+        background: #1f2937;
+        color: white;
+      }
+
+      .sidebar a.active {
+        background: #2563eb;
+        color: white;
+      }
+
+      /* ================= MAIN ================= */
+
+      .main-content {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+        min-height: 100vh;
+        padding: 30px;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .page-header h1 {
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      .page-header p {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      .date {
+        color: #6b7280;
+        font-size: 14px;
+      }
+
+      /* ================= SUMMARY ================= */
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+
+      .summary-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .summary-card h3 {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .summary-card .number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #111827;
+      }
+
+      /* ================= TOOLBAR ================= */
+
+      .toolbar {
+        background: white;
+        padding: 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .search-box {
+        flex: 1;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        outline: none;
+      }
+
+      .search-box input:focus {
+        border-color: #2563eb;
+      }
+
+      button {
+        border: none;
+        border-radius: 6px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .add-btn {
+        background: #2563eb;
+        color: white;
+      }
+
+      .add-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .refresh-btn {
+        background: #6b7280;
+        color: white;
+      }
+
+      .refresh-btn:hover {
+        background: #4b5563;
+      }
+
+      /* ================= FORM ================= */
+
+      #orderForm {
+        display: none;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      #orderForm h2 {
+        margin-bottom: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 7px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .form-group input,
+      .form-group select {
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        outline: none;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #2563eb;
+      }
+
+      .form-actions {
+        margin-top: 20px;
+      }
+
+      .save-btn {
+        background: #16a34a;
+        color: white;
+      }
+
+      .save-btn:hover {
+        background: #15803d;
+      }
+
+      .cancel-btn {
+        background: #dc2626;
+        color: white;
+      }
+
+      .cancel-btn:hover {
+        background: #b91c1c;
+      }
+
+      /* ================= MESSAGE ================= */
+
+      .message {
+        display: none;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
+      .message.success {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .message.error {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* ================= TABLE ================= */
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #1f2937;
+        color: white;
+        padding: 14px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      td {
+        padding: 13px 14px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+      }
+
+      tr:hover {
+        background: #f9fafb;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-processing {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .status-completed {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .status-default {
+        background: #e5e7eb;
+        color: #374151;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 6px;
+      }
+
+      .edit-btn {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .edit-btn:hover {
+        background: #d97706;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+      }
+
+      .delete-btn:hover {
+        background: #b91c1c;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1000px) {
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          width: 180px;
+        }
+
+        .main-content {
+          margin-left: 180px;
+          width: calc(100% - 180px);
+          padding: 20px;
+        }
+
+        .page-header {
+          display: block;
+        }
+
+        .date {
+          margin-top: 8px;
+        }
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ================= SIDEBAR ================= -->
+
+    <div class="sidebar">
+      <div class="sidebar-title">📦 Warehouse</div>
+
+      <a href="/">🏠 Dashboard</a>
+
+      <a href="/products">📦 Products</a>
+
+      <a href="/inventory">📊 Inventory</a>
+
+      <a href="/warehouses-page">🏢 Warehouses</a>
+
+      <a href="/locations-page">📍 Locations</a>
+
+      <a href="/orders-page" class="active">🛒 Orders</a>
+
+      <a href="/shipments-page">🚚 Shipments</a>
+
+      <a href="/receivings-page">📥 Receivings</a>
+
+      <a href="/reports-page">📈 Reports</a>
+
+      <a href="/login">🔐 Logout</a>
+    </div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Orders Management</h1>
+
+          <p>Manage customer orders and order status</p>
+        </div>
+
+        <div class="date" id="currentDate"></div>
+      </div>
+
+      <!-- ================= SUMMARY ================= -->
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <h3>Total Orders</h3>
+          <div class="number" id="totalOrders">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Pending Orders</h3>
+          <div class="number" id="pendingOrders">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Completed Orders</h3>
+          <div class="number" id="completedOrders">0</div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Cancelled Orders</h3>
+          <div class="number" id="cancelledOrders">0</div>
+        </div>
+      </div>
+
+      <!-- ================= MESSAGE ================= -->
+
+      <div id="orderMessage" class="message"></div>
+
+      <!-- ================= TOOLBAR ================= -->
+
+      <div class="toolbar">
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchOrder"
+            placeholder="Search by order number, customer, product ID or status..."
+            oninput="filterOrders()"
+          />
+        </div>
+
+        <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh</button>
+
+        <button class="add-btn" onclick="showAddOrderForm()">
+          + Add Order
+        </button>
+      </div>
+
+      <!-- ================= ADD / EDIT FORM ================= -->
+
+      <div id="orderForm">
+        <h2 id="formTitle">Add New Order</h2>
+
+        <input type="hidden" id="editOrderId" />
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label> Order Number </label>
+
+            <input
+              type="text"
+              id="orderNumber"
+              placeholder="Enter order number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Customer Name </label>
+
+            <input
+              type="text"
+              id="customerName"
+              placeholder="Enter customer name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Product ID </label>
+
+            <input
+              type="number"
+              id="orderProductId"
+              placeholder="Enter product ID"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Quantity </label>
+
+            <input
+              type="number"
+              id="orderQuantity"
+              placeholder="Enter quantity"
+              min="1"
+            />
+          </div>
+
+          <div class="form-group">
+            <label> Status </label>
+
+            <select id="orderStatus">
+              <option value="Pending">Pending</option>
+
+              <option value="Processing">Processing</option>
+
+              <option value="Completed">Completed</option>
+
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="save-btn" id="saveOrderButton" onclick="saveOrder()">
+            Save Order
+          </button>
+
+          <button class="cancel-btn" onclick="hideOrderForm()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- ================= TABLE ================= -->
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+
+              <th>Order Number</th>
+
+              <th>Customer</th>
+
+              <th>Product ID</th>
+
+              <th>Quantity</th>
+
+              <th>Status</th>
+
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="7" class="loading">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+
+    let ordersData = [];
+
+
+    /* ================= DATE ================= */
+
+    function loadCurrentDate() {
+
+        const dateElement =
+            document.getElementById("currentDate");
+
+        const today = new Date();
+
+        dateElement.textContent =
+            today.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+    }
+
+
+    /* ================= LOAD ORDERS ================= */
+
+    async function loadOrders() {
+
+        const tableBody =
+            document.getElementById("ordersTableBody");
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="loading">
+                    Loading orders...
+                </td>
+            </tr>
+        `;
+
+        try {
+
+            const response =
+                await fetch("/orders");
+
+            if (!response.ok) {
+                throw new Error("Failed to load orders");
+            }
+
+            const data =
+                await response.json();
+
+            ordersData =
+                Array.isArray(data) ? data : [];
+
+            updateOrderSummary();
+
+            displayOrders(ordersData);
+
+        } catch (error) {
+
+            console.error(
+                "Load Orders Error:",
+                error
+            );
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        ❌ Failed to load orders
+                    </td>
+                </tr>
+            `;
+
+            showMessage(
+                "Failed to load orders.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= DISPLAY ORDERS ================= */
+
+    function displayOrders(orders) {
+
+        const tableBody =
+            document.getElementById("ordersTableBody");
+
+        tableBody.innerHTML = "";
+
+
+        if (!orders || orders.length === 0) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        No orders found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        orders.forEach(function(order) {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${order.id ?? "-"}
+                </td>
+
+                <td>
+                    ${order.order_number ?? "-"}
+                </td>
+
+                <td>
+                    ${order.customer_name ?? "-"}
+                </td>
+
+                <td>
+                    ${order.product_id ?? "-"}
+                </td>
+
+                <td>
+                    ${order.quantity ?? "-"}
+                </td>
+
+                <td>
+                    ${getStatusBadge(order.status)}
+                </td>
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        <button
+                            class="edit-btn"
+                            onclick="editOrder(${order.id})"
+                        >
+                            ✏ Edit
+                        </button>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteOrder(${order.id})"
+                        >
+                            🗑 Delete
+                        </button>
+
+                    </div>
+
+                </td>
+            `;
+
+
+            tableBody.appendChild(row);
+
+        });
+    }
+
+
+    /* ================= STATUS BADGE ================= */
+
+    function getStatusBadge(status) {
+
+        const value =
+            String(status || "Pending");
+
+        const lower =
+            value.toLowerCase();
+
+
+        let className =
+            "status-default";
+
+
+        if (lower === "pending") {
+
+            className =
+                "status-pending";
+
+        } else if (lower === "processing") {
+
+            className =
+                "status-processing";
+
+        } else if (
+            lower === "completed" ||
+            lower === "complete"
+        ) {
+
+            className =
+                "status-completed";
+
+        } else if (lower === "cancelled") {
+
+            className =
+                "status-cancelled";
+        }
+
+
+        return `
+            <span class="status-badge ${className}">
+                ${value}
+            </span>
+        `;
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    function updateOrderSummary() {
+
+        const total =
+            ordersData.length;
+
+
+        const pending =
+            ordersData.filter(function(order) {
+
+                return String(order.status || "")
+                    .toLowerCase() === "pending";
+
+            }).length;
+
+
+        const completed =
+            ordersData.filter(function(order) {
+
+                const status =
+                    String(order.status || "")
+                    .toLowerCase();
+
+                return (
+                    status === "completed" ||
+                    status === "complete"
+                );
+
+            }).length;
+
+
+        const cancelled =
+            ordersData.filter(function(order) {
+
+                return String(order.status || "")
+                    .toLowerCase() === "cancelled";
+
+            }).length;
+
+
+        document.getElementById(
+            "totalOrders"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "pendingOrders"
+        ).textContent = pending;
+
+
+        document.getElementById(
+            "completedOrders"
+        ).textContent = completed;
+
+
+        document.getElementById(
+            "cancelledOrders"
+        ).textContent = cancelled;
+    }
+
+
+    /* ================= SHOW FORM ================= */
+
+    function showAddOrderForm() {
+
+        document.getElementById(
+            "orderForm"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent = "Add New Order";
+
+
+        document.getElementById(
+            "saveOrderButton"
+        ).textContent = "Save Order";
+
+
+        clearOrderForm();
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    /* ================= HIDE FORM ================= */
+
+    function hideOrderForm() {
+
+        document.getElementById(
+            "orderForm"
+        ).style.display = "none";
+
+        clearOrderForm();
+    }
+
+
+    /* ================= CLEAR FORM ================= */
+
+    function clearOrderForm() {
+
+        document.getElementById(
+            "editOrderId"
+        ).value = "";
+
+
+        document.getElementById(
+            "orderNumber"
+        ).value = "";
+
+
+        document.getElementById(
+            "customerName"
+        ).value = "";
+
+
+        document.getElementById(
+            "orderProductId"
+        ).value = "";
+
+
+        document.getElementById(
+            "orderQuantity"
+        ).value = "";
+
+
+        document.getElementById(
+            "orderStatus"
+        ).value = "Pending";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent = "Add New Order";
+
+
+        document.getElementById(
+            "saveOrderButton"
+        ).textContent = "Save Order";
+    }
+
+
+    /* ================= SAVE ORDER ================= */
+
+    async function saveOrder() {
+
+        const editId =
+            document.getElementById(
+                "editOrderId"
+            ).value;
+
+
+        const orderNumber =
+            document.getElementById(
+                "orderNumber"
+            ).value.trim();
+
+
+        const customerName =
+            document.getElementById(
+                "customerName"
+            ).value.trim();
+
+
+        const productId =
+            Number(
+                document.getElementById(
+                    "orderProductId"
+                ).value
+            );
+
+
+        const quantity =
+            Number(
+                document.getElementById(
+                    "orderQuantity"
+                ).value
+            );
+
+
+        const status =
+            document.getElementById(
+                "orderStatus"
+            ).value;
+
+
+        /* Validation */
+
+        if (!orderNumber) {
+
+            showMessage(
+                "Please enter Order Number.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!customerName) {
+
+            showMessage(
+                "Please enter Customer Name.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!productId || productId <= 0) {
+
+            showMessage(
+                "Please enter a valid Product ID.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!quantity || quantity <= 0) {
+
+            showMessage(
+                "Please enter a valid Quantity.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            let response;
+
+
+            /* EDIT */
+
+            if (editId) {
+
+                response =
+                    await fetch(
+                        `/orders/${editId}`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                order_number:
+                                    orderNumber,
+
+                                customer_name:
+                                    customerName,
+
+                                product_id:
+                                    productId,
+
+                                quantity:
+                                    quantity,
+
+                                status:
+                                    status
+                            })
+                        }
+                    );
+
+            }
+
+
+            /* ADD */
+
+            else {
+
+                response =
+                    await fetch(
+                        "/orders",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                order_number:
+                                    orderNumber,
+
+                                customer_name:
+                                    customerName,
+
+                                product_id:
+                                    productId,
+
+                                quantity:
+                                    quantity,
+
+                                status:
+                                    status
+                            })
+                        }
+                    );
+            }
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (error) {
+
+                data = {};
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Operation failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (editId) {
+
+                showMessage(
+                    "Order updated successfully!",
+                    "success"
+                );
+
+            } else {
+
+                showMessage(
+                    "Order added successfully!",
+                    "success"
+                );
+            }
+
+
+            hideOrderForm();
+
+            await loadOrders();
+
+
+        } catch (error) {
+
+            console.error(
+                "Save Order Error:",
+                error
+            );
+
+            showMessage(
+                "Something went wrong.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= EDIT ORDER ================= */
+
+    function editOrder(id) {
+
+        const order =
+            ordersData.find(function(item) {
+
+                return Number(item.id) ===
+                    Number(id);
+
+            });
+
+
+        if (!order) {
+
+            showMessage(
+                "Order not found.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "orderForm"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "formTitle"
+        ).textContent = "Edit Order";
+
+
+        document.getElementById(
+            "saveOrderButton"
+        ).textContent = "Update Order";
+
+
+        document.getElementById(
+            "editOrderId"
+        ).value = order.id;
+
+
+        document.getElementById(
+            "orderNumber"
+        ).value =
+            order.order_number ?? "";
+
+
+        document.getElementById(
+            "customerName"
+        ).value =
+            order.customer_name ?? "";
+
+
+        document.getElementById(
+            "orderProductId"
+        ).value =
+            order.product_id ?? "";
+
+
+        document.getElementById(
+            "orderQuantity"
+        ).value =
+            order.quantity ?? "";
+
+
+        document.getElementById(
+            "orderStatus"
+        ).value =
+            order.status || "Pending";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+    /* ================= DELETE ORDER ================= */
+
+    async function deleteOrder(id) {
+
+        const order =
+            ordersData.find(function(item) {
+
+                return Number(item.id) ===
+                    Number(id);
+
+            });
+
+
+        const orderNumber =
+            order
+                ? order.order_number
+                : id;
+
+
+        const confirmed =
+            confirm(
+                `Are you sure you want to delete order "${orderNumber}"?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/orders/${id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (error) {
+
+                data = {};
+            }
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.message ||
+                    data.error ||
+                    "Failed to delete order.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showMessage(
+                "Order deleted successfully!",
+                "success"
+            );
+
+
+            await loadOrders();
+
+
+        } catch (error) {
+
+            console.error(
+                "Delete Order Error:",
+                error
+            );
+
+
+            showMessage(
+                "Something went wrong while deleting.",
+                "error"
+            );
+        }
+    }
+
+
+    /* ================= SEARCH ================= */
+
+    function filterOrders() {
+
+        const search =
+            document.getElementById(
+                "searchOrder"
+            ).value
+            .toLowerCase()
+            .trim();
+
+
+        if (!search) {
+
+            displayOrders(ordersData);
+
+            return;
+        }
+
+
+        const filtered =
+            ordersData.filter(function(order) {
+
+                const id =
+                    String(
+                        order.id ?? ""
+                    ).toLowerCase();
+
+
+                const orderNumber =
+                    String(
+                        order.order_number ?? ""
+                    ).toLowerCase();
+
+
+                const customer =
+                    String(
+                        order.customer_name ?? ""
+                    ).toLowerCase();
+
+
+                const productId =
+                    String(
+                        order.product_id ?? ""
+                    ).toLowerCase();
+
+
+                const status =
+                    String(
+                        order.status ?? ""
+                    ).toLowerCase();
+
+
+                return (
+                    id.includes(search) ||
+                    orderNumber.includes(search) ||
+                    customer.includes(search) ||
+                    productId.includes(search) ||
+                    status.includes(search)
+                );
+
+            });
+
+
+        displayOrders(filtered);
+    }
+
+
+    /* ================= MESSAGE ================= */
+
+    function showMessage(message, type) {
+
+        const messageElement =
+            document.getElementById(
+                "orderMessage"
+            );
+
+
+        messageElement.textContent =
+            message;
+
+
+        messageElement.className =
+            "message " + type;
+
+
+        setTimeout(function() {
+
+            messageElement.className =
+                "message";
+
+        }, 4000);
+    }
+
+
+    /* ================= ENTER KEY ================= */
+
+    document.getElementById(
+        "orderQuantity"
+    ).addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                saveOrder();
+
+            }
+        }
+    );
+
+
+    /* ================= PAGE LOAD ================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadCurrentDate();
+
+            loadOrders();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
